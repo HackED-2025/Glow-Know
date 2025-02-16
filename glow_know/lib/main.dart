@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:glow_know/screens/camera_page.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -153,11 +152,36 @@ class _MyHomePageState extends State<MyHomePage> {
               draggable: true,
               child: Container(
                 color: Colors.grey[850],
-                child: const Center(
-                  child: Text(
-                    'Product Information',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Product Information',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PreferencesPage(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple[400],
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      child: const Text(
+                        'Preferences',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
