@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/theme.dart';
 
 class PreferencesPage extends StatefulWidget {
   const PreferencesPage({super.key});
@@ -49,7 +50,11 @@ class _PreferencesPageState extends State<PreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product Preferences')),
+      appBar: AppBar(
+        title: const Text('Product Preferences'),
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -92,7 +97,11 @@ class _PreferencesPageState extends State<PreferencesPage> {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -101,20 +110,20 @@ class _PreferencesPageState extends State<PreferencesPage> {
           children:
               options.map((option) {
                 final isSelected = selected.contains(option);
-                return FilterChip(
+                return ChoiceChip(
                   label: Text(
                     option,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color: isSelected ? AppColors.white : AppColors.primary,
                     ),
                   ),
                   selected: isSelected,
-                  selectedColor: Colors.purple[400], // Purple color
-                  backgroundColor: Colors.grey[300],
-                  checkmarkColor: Colors.transparent,
-                  elevation: 0,
-                  pressElevation: 0,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  backgroundColor: AppColors.white,
+                  selectedColor: AppColors.secondary.withOpacity(0.3),
+                  side: BorderSide(color: AppColors.secondary, width: 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   onSelected: (_) => _toggleSelection(selected, option),
                 );
               }).toList(),
@@ -126,14 +135,19 @@ class _PreferencesPageState extends State<PreferencesPage> {
   Widget _buildVeganToggle() {
     return Row(
       children: [
-        const Text(
+        Text(
           'Vegan Friendly',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
         ),
         const Spacer(),
         Switch(
           value: _isVegan,
-          activeColor: Colors.purple[400], // Purple color for switch
+          activeColor: AppColors.secondary,
+          activeTrackColor: AppColors.secondary.withOpacity(0.4),
           onChanged: (value) {
             setState(() {
               _isVegan = value;
