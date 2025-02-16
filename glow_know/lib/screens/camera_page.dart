@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'product_info_page.dart'; // Add this import
+import 'product_info_page.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -11,6 +11,9 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   late MobileScannerController cameraController;
+  bool isProcessing = false;
+  String? lastScannedCode;
+  DateTime? lastScanTime;
   bool isTorchOn = false;
 
   @override
@@ -30,6 +33,28 @@ class _CameraPageState extends State<CameraPage> {
       isTorchOn = !isTorchOn;
       cameraController.toggleTorch();
     });
+  }
+
+  void _handleBarcode(String scannedData) {
+    final now = DateTime.now();
+
+    if (lastScannedCode == scannedData &&
+        lastScanTime != null &&
+        now.difference(lastScanTime!) < const Duration(seconds: 2)) {
+      return;
+    }
+
+    setState(() {
+      lastScannedCode = scannedData;
+      lastScanTime = now;
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductInfoPage(barcode: scannedData),
+      ),
+    );
   }
 
   @override
@@ -53,18 +78,10 @@ class _CameraPageState extends State<CameraPage> {
             child: MobileScanner(
               controller: cameraController,
               onDetect: (capture) {
-                final List<Barcode> barcodes = capture.barcodes;
+                final barcodes = capture.barcodes;
                 if (barcodes.isNotEmpty) {
-                  final String? scannedData = barcodes.first.rawValue;
-                  if (scannedData != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ProductInfoPage(barcode: scannedData),
-                      ),
-                    );
-                  }
+                  final scannedData = barcodes.first.rawValue;
+                  if (scannedData != null) _handleBarcode(scannedData);
                 }
               },
             ),
