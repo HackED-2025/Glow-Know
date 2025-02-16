@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:glow_know/screens/camera_page.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() => runApp(const MyApp());
 
@@ -28,10 +29,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
 
   void _toggleSheet() => _sheetController.snapToPosition(
-        _sheetController.currentPosition < 50
-            ? const SnappingPosition.factor(positionFactor: 1.0)
-            : const SnappingPosition.factor(positionFactor: 0.0),
-      );
+    _sheetController.currentPosition < 50
+        ? const SnappingPosition.factor(positionFactor: 1.0)
+        : const SnappingPosition.factor(positionFactor: 0.0),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +43,86 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Glow Know',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 30),
-                RoundElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CameraPage()),
+                const Text(
+                  'Tap to scan product',
+                  style: TextStyle(
+                    color: Color.fromRGBO(237, 105, 139, 1),
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                    height: 1,
                   ),
-                  child: const Icon(Icons.camera_alt, color: Colors.white),
-                  diameter: 120,
-                  backgroundColor: Colors.grey[300]!,
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CameraPage(),
+                        ),
+                      ),
+                  child: SizedBox(
+                    width: 280,
+                    height: 280,
+                    child: Stack(
+                      children: [
+                        // Outer Circle (Border)
+                        Container(
+                          width: 280,
+                          height: 280,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.15), width: 1),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        // Middle Circle (Shadow + White Border)
+                        Positioned(
+                          top: 29,
+                          left: 29,
+                          child: Container(
+                            width: 222,
+                            height: 222,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              border: Border.all(color: Colors.white, width: 1),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                                  offset: Offset(0, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Inner Circle (Red with Border)
+                        Positioned(
+                          top: 45.5,
+                          left: 45.5,
+                          child: Container(
+                            width: 189,
+                            height: 189,
+                            decoration: BoxDecoration(
+                              color: const Color.fromRGBO(175, 50, 82, 1),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: const Color.fromARGB(255, 206, 206, 206), width: 1),
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                'assets/Vector.png',
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                                semanticLabel: 'Camera Icon',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -84,8 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 color: Colors.grey[850],
                 child: const Center(
-                  child: Text('Product Information',
-                      style: TextStyle(color: Colors.white, fontSize: 20)),
+                  child: Text(
+                    'Product Information',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                 ),
               ),
             ),
