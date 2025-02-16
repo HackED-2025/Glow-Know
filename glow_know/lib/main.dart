@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glow_know/screens/camera_page.dart';  // Make sure to import the camera screen
+import 'package:glow_know/screens/preferences_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -26,12 +28,35 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
+  bool _isPressed = false;
 
-  void _toggleSheet() => _sheetController.snapToPosition(
-    _sheetController.currentPosition < 50
-        ? const SnappingPosition.factor(positionFactor: 1.0)
-        : const SnappingPosition.factor(positionFactor: 0.0),
-  );
+  void _toggleAnimation() {
+    setState(() {
+      _isPressed = true;
+    });
+
+    // Delay navigation to allow animation to complete
+    Future.delayed(const Duration(milliseconds: 500), () {
+      // Navigate to the Camera screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const CameraPage()),
+      ).then((_) {
+        // Reset the button state when returning to the home page
+        setState(() {
+          _isPressed = false;
+        });
+      });
+    });
+  }
+
+  void _toggleSheet() {
+    _sheetController.snapToPosition(
+      _sheetController.currentPosition < 50
+          ? const SnappingPosition.factor(positionFactor: 1.0)
+          : const SnappingPosition.factor(positionFactor: 0.0),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,67 +79,88 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CameraPage(),
-                        ),
-                      ),
-                  child: SizedBox(
+                  onTap: _toggleAnimation,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
                     width: 280,
                     height: 280,
                     child: Stack(
                       children: [
                         // Outer Circle (Border)
-                        Container(
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
                           width: 280,
                           height: 280,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.15), width: 1),
+                            border: Border.all(
+                              color: _isPressed
+                                  ? const Color.fromRGBO(237, 105, 139, 1)
+                                  : const Color.fromRGBO(0, 0, 0, 0.15),
+                              width: 1,
+                            ),
                             shape: BoxShape.circle,
                           ),
                         ),
                         // Middle Circle (Shadow + White Border)
-                        Positioned(
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 300),
                           top: 29,
                           left: 29,
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
                             width: 222,
                             height: 222,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.white,
                               border: Border.all(color: Colors.white, width: 1),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.25),
-                                  offset: Offset(0, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
+                              boxShadow: _isPressed
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color.fromRGBO(255, 145, 147, 0.5),
+                                        offset: Offset(0, 0),
+                                        blurRadius: 50,
+                                      ),
+                                    ]
+                                  : [
+                                      BoxShadow(
+                                        color: const Color.fromRGBO(0, 0, 0, 0.25),
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
                             ),
                           ),
                         ),
                         // Inner Circle (Red with Border)
-                        Positioned(
+                        AnimatedPositioned(
+                          duration: const Duration(milliseconds: 300),
                           top: 45.5,
                           left: 45.5,
-                          child: Container(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
                             width: 189,
                             height: 189,
                             decoration: BoxDecoration(
-                              color: const Color.fromRGBO(175, 50, 82, 1),
+                              color: _isPressed
+                                  ? const Color.fromRGBO(237, 105, 139, 1)
+                                  : const Color.fromRGBO(175, 50, 82, 1),
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color.fromARGB(255, 206, 206, 206), width: 1),
+                              border: Border.all(
+                                  color: _isPressed
+                                      ? const Color.fromRGBO(0, 0, 0, 0.25)
+                                      : const Color.fromARGB(255, 206, 206, 206),
+                                  width: 1),
                             ),
                             child: Center(
-                              child: Image.asset(
-                                'assets/Vector.png',
-                                width: 50,
-                                height: 50,
-                                fit: BoxFit.cover,
-                                semanticLabel: 'Camera Icon',
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                width: _isPressed ? 60 : 50, // Image size grows
+                                height: _isPressed ? 60 : 50,
+                                child: Image.asset(
+                                  'assets/Vector.png',
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
@@ -188,35 +234,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class RoundElevatedButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final Widget child;
-  final double diameter;
-  final Color backgroundColor;
-
-  const RoundElevatedButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.diameter = 80,
-    this.backgroundColor = Colors.blue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        shape: const CircleBorder(),
-        padding: EdgeInsets.all(diameter * 0.2),
-        minimumSize: Size(diameter, diameter),
-      ),
-      child: child,
     );
   }
 }
