@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:glow_know/models/product.dart';
 
 class ProductInfoPage extends StatelessWidget {
   final String barcode;
+  final Product product;
 
-  const ProductInfoPage({super.key, required this.barcode});
+  const ProductInfoPage({super.key, required this.barcode, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,8 @@ class ProductInfoPage extends StatelessWidget {
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Product Name: Sample Product',
+            Text(
+              'Product Name: ${product.productName}',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),

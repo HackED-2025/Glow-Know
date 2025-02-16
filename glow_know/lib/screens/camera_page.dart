@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'product_info_page.dart';
 import 'package:glow_know/models/product.dart';
 import 'package:glow_know/services/history_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -52,26 +56,40 @@ class _CameraPageState extends State<CameraPage> {
       lastScanTime = now;
     });
 
-    // Create new product (using sample data)
-    final newProduct = Product(
-      productName: 'Product $scannedData',
-      productScore: 4.5,
-      productEnvironmentScore: 3.8,
-      productType: 'Skincare',
-      ingredientsList: 'Water, Glycerin, ...',
-      ingredientsListSummary: 'Moisturizing formula',
-      ingredientsListBreakdown: 'Contains 5 beneficial ingredients',
-    );
+    try {
+      print('Fetching...');
+      final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/$scannedData?key=eefd39939a2b498eca937819b56c956c998335e694f38204b2e4630e6a1aaf58'))
+        .timeout(const Duration(seconds: 10));
+      final responseData = jsonDecode(response.body);
+      print(responseData);
+      
 
-    // Save to history
-    await HistoryService.addProduct(newProduct);
+      // Create new product (using sample data)
+      final newProduct = Product(
+        productName: responseData['product']['name'],
+        productScore: 4.5,
+        productEnvironmentScore: 3.8,
+        productType: 'Skincare',
+        ingredientsList: 'Nada',
+        ingredientsListSummary: 'Moisturizing formula',
+        ingredientsListBreakdown: 'Contains 5 beneficial ingredients',
+      );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProductInfoPage(barcode: scannedData),
-      ),
-    );
+      // Save to history
+      await HistoryService.addProduct(newProduct);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductInfoPage(barcode: scannedData, product: newProduct),
+        ),
+      );
+
+    } on TimeoutException catch (e) {
+      print('Timeout: $e');
+    } on Exception catch (e) {
+      print('Error: $e');
+    }
   }
 
   @override
