@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:glow_know/screens/camera_page.dart';  // Make sure to import the camera screen
+import 'package:glow_know/screens/camera_page.dart';
 import 'package:glow_know/screens/preferences_screen.dart';
+import 'package:glow_know/utils/theme.dart'; // Import theme
 
 void main() => runApp(const MyApp());
 
@@ -11,10 +11,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Glow Know',
-      home: MyHomePage(),
+      theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
+      home: const MyHomePage(),
     );
   }
 }
@@ -35,14 +36,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _isPressed = true;
     });
 
-    // Delay navigation to allow animation to complete
     Future.delayed(const Duration(milliseconds: 500), () {
-      // Navigate to the Camera screen
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const CameraPage()),
       ).then((_) {
-        // Reset the button state when returning to the home page
         setState(() {
           _isPressed = false;
         });
@@ -61,16 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Tap to scan product',
                   style: TextStyle(
-                    color: Color.fromRGBO(237, 105, 139, 1),
+                    color: AppColors.fontPrimary,
                     fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
@@ -93,9 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 280,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: _isPressed
-                                  ? const Color.fromRGBO(237, 105, 139, 1)
-                                  : const Color.fromRGBO(0, 0, 0, 0.15),
+                              color:
+                                  _isPressed
+                                      ? AppColors.secondary
+                                      : AppColors.fontPrimary.withOpacity(0.15),
                               width: 1,
                             ),
                             shape: BoxShape.circle,
@@ -114,25 +114,28 @@ class _MyHomePageState extends State<MyHomePage> {
                               shape: BoxShape.circle,
                               color: Colors.white,
                               border: Border.all(color: Colors.white, width: 1),
-                              boxShadow: _isPressed
-                                  ? [
-                                      BoxShadow(
-                                        color: const Color.fromRGBO(255, 145, 147, 0.5),
-                                        offset: Offset(0, 0),
-                                        blurRadius: 50,
-                                      ),
-                                    ]
-                                  : [
-                                      BoxShadow(
-                                        color: const Color.fromRGBO(0, 0, 0, 0.25),
-                                        offset: const Offset(0, 2),
-                                        blurRadius: 4,
-                                      ),
-                                    ],
+                              boxShadow:
+                                  _isPressed
+                                      ? [
+                                        BoxShadow(
+                                          color: AppColors.secondary
+                                              .withOpacity(0.5),
+                                          offset: Offset(0, 0),
+                                          blurRadius: 50,
+                                        ),
+                                      ]
+                                      : [
+                                        BoxShadow(
+                                          color: AppColors.fontPrimary
+                                              .withOpacity(0.25),
+                                          offset: const Offset(0, 2),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
                             ),
                           ),
                         ),
-                        // Inner Circle (Red with Border)
+                        // Inner Circle (Primary with Border)
                         AnimatedPositioned(
                           duration: const Duration(milliseconds: 300),
                           top: 45.5,
@@ -142,20 +145,22 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: 189,
                             height: 189,
                             decoration: BoxDecoration(
-                              color: _isPressed
-                                  ? const Color.fromRGBO(237, 105, 139, 1)
-                                  : const Color.fromRGBO(175, 50, 82, 1),
+                              color: AppColors.primary,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                  color: _isPressed
-                                      ? const Color.fromRGBO(0, 0, 0, 0.25)
-                                      : const Color.fromARGB(255, 206, 206, 206),
-                                  width: 1),
+                                color:
+                                    _isPressed
+                                        ? AppColors.fontPrimary.withOpacity(
+                                          0.25,
+                                        )
+                                        : AppColors.fontSecondary,
+                                width: 1,
+                              ),
                             ),
                             child: Center(
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                width: _isPressed ? 60 : 50, // Image size grows
+                                width: _isPressed ? 60 : 50,
                                 height: _isPressed ? 60 : 50,
                                 child: Image.asset(
                                   'assets/Vector.png',
@@ -178,13 +183,13 @@ class _MyHomePageState extends State<MyHomePage> {
             grabbing: GestureDetector(
               onTap: _toggleSheet,
               child: Container(
-                color: Colors.grey[800],
+                color: AppColors.primary,
                 alignment: Alignment.center,
                 child: Container(
                   width: 40,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: Colors.grey[400],
+                    color: AppColors.background,
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -197,13 +202,16 @@ class _MyHomePageState extends State<MyHomePage> {
             sheetBelow: SnappingSheetContent(
               draggable: true,
               child: Container(
-                color: Colors.grey[850],
+                color: AppColors.background,
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Product Information',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(
+                        color: AppColors.fontPrimary,
+                        fontSize: 20,
+                      ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
@@ -216,15 +224,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purple[400],
+                        backgroundColor: AppColors.primary,
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Preferences',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          color: AppColors.background,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ],
