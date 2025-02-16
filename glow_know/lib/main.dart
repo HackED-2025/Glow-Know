@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:glow_know/screens/camera_page.dart'; // Update with your project name
+// import 'package:glow_know/screens/camera_page.dart'; // Update with your project name
+import 'package:glow_know/screens/preferences_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -77,7 +78,7 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const CameraPage(),
+                          builder: (context) => const PreferencesPage(),
                         ),
                       );
                     },
