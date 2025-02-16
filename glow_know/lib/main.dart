@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:glow_know/screens/camera_page.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
-import 'package:glow_know/screens/camera_page.dart'; // Update with your project name
-import 'package:glow_know/screens/preferences_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -30,10 +28,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
 
   void _toggleSheet() => _sheetController.snapToPosition(
-    _sheetController.currentPosition < 50
-        ? const SnappingPosition.factor(positionFactor: 1.0)
-        : const SnappingPosition.factor(positionFactor: 0.0),
-  );
+        _sheetController.currentPosition < 50
+            ? const SnappingPosition.factor(positionFactor: 1.0)
+            : const SnappingPosition.factor(positionFactor: 0.0),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -44,19 +42,14 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Glow Know',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
+                const Text('Glow Know',
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 30),
                 RoundElevatedButton(
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CameraPage(),
-                        ),
-                      ),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CameraPage()),
+                  ),
                   child: const Icon(Icons.camera_alt, color: Colors.white),
                   diameter: 120,
                   backgroundColor: Colors.grey[300]!,
@@ -91,10 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 color: Colors.grey[850],
                 child: const Center(
-                  child: Text(
-                    'Product Information',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                  child: Text('Product Information',
+                      style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
               ),
             ),

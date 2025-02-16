@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'product_info_page.dart';
-import 'package:glow_know/models/product.dart';
-import 'package:glow_know/services/history_service.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -37,10 +35,9 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
-  void _handleBarcode(String scannedData) async {
+  void _handleBarcode(String scannedData) {
     final now = DateTime.now();
 
-    // Duplicate check logic
     if (lastScannedCode == scannedData &&
         lastScanTime != null &&
         now.difference(lastScanTime!) < const Duration(seconds: 2)) {
@@ -52,28 +49,10 @@ class _CameraPageState extends State<CameraPage> {
       lastScanTime = now;
     });
 
-    // Create new product (using sample data)
-    final newProduct = Product(
-      productName: 'Product $scannedData',
-      productScore: 4.5,
-      productEnvironmentScore: 3.8,
-      productType: 'Skincare',
-      ingredientsList: 'Water, Glycerin, ...',
-      ingredientsListSummary: 'Moisturizing formula',
-      ingredientsListBreakdown: 'Contains 5 beneficial ingredients',
-    );
-
-    // Save to history
-    await HistoryService.addProduct(newProduct);
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => ProductInfoPage(
-              barcode: scannedData,
-              product: newProduct, // Pass product to info page
-            ),
+        builder: (context) => ProductInfoPage(barcode: scannedData),
       ),
     );
   }
