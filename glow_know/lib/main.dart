@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glow_know/screens/camera_page.dart';
+import 'package:glow_know/screens/preferences_screen.dart';
 
 void main() => runApp(const MyApp());
 
@@ -71,7 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 280,
                           height: 280,
                           decoration: BoxDecoration(
-                            border: Border.all(color: Color.fromRGBO(0, 0, 0, 0.15), width: 1),
+                            border: Border.all(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              width: 1,
+                            ),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -106,7 +111,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             decoration: BoxDecoration(
                               color: const Color.fromRGBO(175, 50, 82, 1),
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color.fromARGB(255, 206, 206, 206), width: 1),
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 206, 206, 206),
+                                width: 1,
+                              ),
                             ),
                             child: Center(
                               child: Image.asset(
