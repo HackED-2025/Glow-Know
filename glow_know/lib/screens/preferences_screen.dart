@@ -50,10 +50,11 @@ class _PreferencesPageState extends State<PreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Product Preferences'),
         backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.white,
+        foregroundColor: AppColors.background,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -100,7 +101,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: AppColors.fontPrimary,
           ),
         ),
         const SizedBox(height: 8),
@@ -114,16 +115,21 @@ class _PreferencesPageState extends State<PreferencesPage> {
                   label: Text(
                     option,
                     style: TextStyle(
-                      color: isSelected ? AppColors.white : AppColors.primary,
+                      color:
+                          isSelected
+                              ? AppColors.fontSecondary
+                              : AppColors.primary,
                     ),
                   ),
                   selected: isSelected,
-                  backgroundColor: AppColors.white,
+                  backgroundColor: AppColors.background,
                   selectedColor: AppColors.secondary.withOpacity(0.3),
                   side: BorderSide(color: AppColors.secondary, width: 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  showCheckmark: false, // Add this line
+                  pressElevation: 0, // Add this line to remove press effect
                   onSelected: (_) => _toggleSelection(selected, option),
                 );
               }).toList(),
@@ -140,7 +146,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: AppColors.fontPrimary,
           ),
         ),
         const Spacer(),
