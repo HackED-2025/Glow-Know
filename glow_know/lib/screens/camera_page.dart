@@ -69,11 +69,7 @@ class _CameraPageState extends State<CameraPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => ProductInfoPage(
-              barcode: scannedData,
-              product: newProduct, // Pass product to info page
-            ),
+        builder: (context) => ProductInfoPage(barcode: scannedData),
       ),
     );
   }
