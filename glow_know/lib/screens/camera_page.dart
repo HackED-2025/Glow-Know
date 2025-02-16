@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'product_info_page.dart'; // Add this import
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -55,20 +56,15 @@ class _CameraPageState extends State<CameraPage> {
                 final List<Barcode> barcodes = capture.barcodes;
                 if (barcodes.isNotEmpty) {
                   final String? scannedData = barcodes.first.rawValue;
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: const Text('Scanned Data'),
-                          content: Text(scannedData ?? 'No data found'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        ),
-                  );
+                  if (scannedData != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ProductInfoPage(barcode: scannedData),
+                      ),
+                    );
+                  }
                 }
               },
             ),
