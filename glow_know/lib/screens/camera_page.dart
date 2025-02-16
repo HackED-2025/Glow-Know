@@ -58,11 +58,15 @@ class _CameraPageState extends State<CameraPage> {
 
     try {
       print('Fetching...');
-      final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/$scannedData?key=eefd39939a2b498eca937819b56c956c998335e694f38204b2e4630e6a1aaf58'))
-        .timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(
+            Uri.parse(
+              'https://go-upc.com/api/v1/code/$scannedData?key=eefd39939a2b498eca937819b56c956c998335e694f38204b2e4630e6a1aaf58',
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
       final responseData = jsonDecode(response.body);
       print(responseData);
-      
 
       // Create new product (using sample data)
       final newProduct = Product(
@@ -81,10 +85,11 @@ class _CameraPageState extends State<CameraPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductInfoPage(barcode: scannedData, product: newProduct),
+          builder:
+              (context) =>
+                  ProductInfoPage(barcode: scannedData, product: newProduct),
         ),
       );
-
     } on TimeoutException catch (e) {
       print('Timeout: $e');
     } on Exception catch (e) {
