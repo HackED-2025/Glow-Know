@@ -8,6 +8,10 @@ import 'package:glow_know/utils/theme.dart';
 import 'package:glow_know/assets/svgs.dart';
 
 
+import 'package:glow_know/models/product.dart';
+import 'package:glow_know/services/history_service.dart';
+
+
 // import 'package:flutter/material.dart';
 import 'package:glow_know/widgets/snapping_sheet_drawer.dart';
 // import 'package:snapping_sheet/snapping_sheet.dart';
@@ -23,6 +27,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
   bool _isPressed = false;
+  late Future<List<Product>> _historyFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshHistory(); // Initialize history
+  }
+
+  void _refreshHistory() {
+    setState(() {
+      _historyFuture = HistoryService.getHistory(); // Correct initialization
+    });
+  }
 
   final List<Map<String, dynamic>> _recentProducts = [
     {'score': 10, 'title': 'Product A'},
@@ -253,6 +270,8 @@ class _MyHomePageState extends State<MyHomePage> {
             controller: _sheetController,
             onTap: _toggleSheet,
             recentProducts: _recentProducts,
+            historyFuture: _historyFuture, // Pass it here
+            refreshHistory: _refreshHistory,
           ),
         ],
       ),
