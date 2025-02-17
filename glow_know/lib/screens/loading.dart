@@ -82,7 +82,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       productName: responseData['product']['name'],
       productScore: double.parse(aiResponse[0]),
       productImage: responseData['product']['imageUrl'],
-      productHealthScore: double.parse(aiResponse[0]),
+      productHealthScore: double.parse(aiResponse[1]),
       productType: 'Skincare',
       ingredientsList: 'Nada',
       ingredientsListSummary: aiResponse[2],
