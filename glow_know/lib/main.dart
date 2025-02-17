@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/screens/camera_page.dart';
-import 'package:glow_know/screens/preferences_screen.dart';
 import 'package:glow_know/utils/theme.dart';
 import 'package:glow_know/assets/svgs.dart';
+import 'package:glow_know/screens/product_info_page.dart';
+import 'package:glow_know/models/product.dart';
+import 'package:glow_know/services/history_service.dart';
+import 'package:glow_know/screens/all_scanned_items_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -44,6 +47,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
   bool _isPressed = false;
+  late Future<List<Product>> _historyFuture; // Add this line
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshHistory(); // Initialize history
+  }
+
+  void _refreshHistory() {
+    setState(() {
+      _historyFuture = HistoryService.getHistory(); // Correct initialization
+    });
+  }
 
   // Dummy list of recently scanned products
   final List<Map<String, dynamic>> _recentProducts = [
@@ -290,22 +306,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Drag indicator
                     Container(
                       width: 48,
                       height: 6,
                       decoration: BoxDecoration(
                         color: AppColors.background,
                         borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Drag to expand',
-                      style: TextStyle(
-                        color: AppColors.fontPrimary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -327,60 +333,78 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 color: AppColors.background,
                 padding: const EdgeInsets.all(20),
-                // Removed the "Product Information" text
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Carousel of recently scanned products
-                    SizedBox(
-                      height: 120,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _recentProducts.length,
-                        itemBuilder: (context, index) {
-                          final product = _recentProducts[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: RecentlyScannedProductCard(
-                              score: product['score'],
-                              title: product['title'],
+                child: FutureBuilder<List<Product>>(
+                  future: _historyFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final products = snapshot.data ?? [];
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (products.isEmpty)
+                          const Center(
+                            child: Text(
+                              'Scan items to compare!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    // Preferences Button: more square and text aligned to left
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PreferencesPage(),
+                          )
+                        else
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 180,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index];
+                                    return GestureDetector(
+                                      onTap: () => _navigateToProduct(product),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 16,
+                                        ),
+                                        child: ProductCard(product: product),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => AllScannedItemsPage(),
+                                    ),
+                                  ).then((_) => _refreshHistory());
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Text('View All'),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Preferences',
-                          style: TextStyle(
-                            color: AppColors.background,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                        const SizedBox(height: 24),
+                        // ... keep preferences button
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -389,96 +413,94 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  void _navigateToProduct(Product product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductInfoPage(product: product),
+      ),
+    );
+  }
 }
 
-/// A card representing a recently scanned product with a colored hexagon and title.
-class RecentlyScannedProductCard extends StatelessWidget {
-  final int score;
-  final String title;
-  const RecentlyScannedProductCard({
-    Key? key,
-    required this.score,
-    required this.title,
-  }) : super(key: key);
+class ProductCard extends StatelessWidget {
+  final Product product;
 
-  // Returns the appropriate color based on the score.
-  Color getColorForScore(int score) {
-    if (score >= 8) {
-      return Colors.red;
-    } else if (score >= 6) {
-      return Colors.orange;
-    } else if (score >= 4) {
-      return Colors.yellow;
-    } else {
-      return Colors.green;
-    }
-  }
+  const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100, // A square container
+      width: 120,
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
-      padding: const EdgeInsets.all(8),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Circle instead of hexagon
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: getColorForScore(score),
-            ),
-            child: Center(
-              child: Text(
-                '$score',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+          Expanded(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    product.productImage,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getScoreColor(product.productScore),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${product.productScore}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, color: Colors.black87),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              product.productName,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
     );
   }
-}
 
-/// A custom clipper to create a hexagon shape.
-class HexagonClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final double width = size.width;
-    final double height = size.height;
-    final Path path = Path();
-    // Define points for a hexagon
-    path.moveTo(width * 0.25, 0);
-    path.lineTo(width * 0.75, 0);
-    path.lineTo(width, height * 0.5);
-    path.lineTo(width * 0.75, height);
-    path.lineTo(width * 0.25, height);
-    path.lineTo(0, height * 0.5);
-    path.close();
-    return path;
+  Color _getScoreColor(double score) {
+    final int roundedScore = score.round();
+    if (roundedScore >= 8) return Colors.red;
+    if (roundedScore >= 6) return Colors.orange;
+    if (roundedScore >= 4) return Colors.yellow;
+    return Colors.green;
   }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
