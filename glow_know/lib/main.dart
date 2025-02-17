@@ -49,12 +49,26 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _toggleSheet() {
-    _sheetController.snapToPosition(
-      _sheetController.currentPosition < 50
-          ? const SnappingPosition.factor(positionFactor: 1.0)
-          : const SnappingPosition.factor(positionFactor: 0.0),
-    );
+    // Toggle between open and closed sheet positions
+    if (_sheetController.currentPosition == 0.0) {
+      // If the sheet is closed, open it
+      _sheetController.snapToPosition(
+        const SnappingPosition.factor(
+          positionFactor: 1.0,
+          grabbingContentOffset: GrabbingContentOffset.bottom,
+        ),
+      );
+    } else {
+      // If the sheet is open, close it
+      _sheetController.snapToPosition(
+        const SnappingPosition.factor(
+          positionFactor: 0.0,
+          grabbingContentOffset: GrabbingContentOffset.top,
+        ),
+      );
+    }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 280,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color:
-                                  _isPressed
-                                      ? AppColors.secondary
-                                      : AppColors.fontPrimary.withOpacity(0.15),
+                              color: _isPressed
+                                  ? AppColors.secondary
+                                  : AppColors.fontPrimary.withOpacity(0.15),
                               width: 1,
                             ),
                             shape: BoxShape.circle,
@@ -114,24 +127,23 @@ class _MyHomePageState extends State<MyHomePage> {
                               shape: BoxShape.circle,
                               color: Colors.white,
                               border: Border.all(color: Colors.white, width: 1),
-                              boxShadow:
-                                  _isPressed
-                                      ? [
-                                        BoxShadow(
-                                          color: AppColors.secondary
-                                              .withOpacity(0.5),
-                                          offset: Offset(0, 0),
-                                          blurRadius: 50,
-                                        ),
-                                      ]
-                                      : [
-                                        BoxShadow(
-                                          color: AppColors.fontPrimary
-                                              .withOpacity(0.25),
-                                          offset: const Offset(0, 2),
-                                          blurRadius: 4,
-                                        ),
-                                      ],
+                              boxShadow: _isPressed
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.secondary
+                                            .withOpacity(0.5),
+                                        offset: Offset(0, 0),
+                                        blurRadius: 50,
+                                      ),
+                                    ]
+                                  : [
+                                      BoxShadow(
+                                        color: AppColors.fontPrimary
+                                            .withOpacity(0.25),
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
                             ),
                           ),
                         ),
@@ -148,12 +160,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color:
-                                    _isPressed
-                                        ? AppColors.fontPrimary.withOpacity(
-                                          0.25,
-                                        )
-                                        : AppColors.fontSecondary,
+                                color: _isPressed
+                                    ? AppColors.fontPrimary.withOpacity(0.25)
+                                    : AppColors.fontSecondary,
                                 width: 1,
                               ),
                             ),
@@ -179,14 +188,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SnappingSheet(
             controller: _sheetController,
-            grabbingHeight: 60,
+            grabbingHeight: 60, // Adjusted grabbing height
             grabbing: GestureDetector(
               onTap: _toggleSheet,
               child: Container(
                 color: AppColors.primary,
-                alignment: Alignment.center,
+                alignment: Alignment.center, // Center the grab bar
                 child: Container(
-                  width: 40,
+                  width: 48,
                   height: 6,
                   decoration: BoxDecoration(
                     color: AppColors.background,
@@ -196,15 +205,21 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             snappingPositions: const [
-              SnappingPosition.factor(positionFactor: 0.0),
-              SnappingPosition.factor(positionFactor: 1.0),
+              SnappingPosition.factor(
+                positionFactor: 0.0,
+                grabbingContentOffset: GrabbingContentOffset.top,
+              ),
+              SnappingPosition.factor(
+                positionFactor: 1.0,
+                grabbingContentOffset: GrabbingContentOffset.bottom,
+              ),
             ],
             sheetBelow: SnappingSheetContent(
               draggable: true,
               child: Container(
                 color: AppColors.background,
                 padding: const EdgeInsets.all(20),
-                child: Column(
+                child: ListView(
                   children: [
                     Text(
                       'Product Information',
