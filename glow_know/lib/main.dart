@@ -80,7 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +117,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           height: 280,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: _isPressed
-                                  ? AppColors.secondary
-                                  : AppColors.fontPrimary.withOpacity(0.15),
+                              color:
+                                  _isPressed
+                                      ? AppColors.secondary
+                                      : AppColors.fontPrimary.withOpacity(0.15),
                               width: 1,
                             ),
                             shape: BoxShape.circle,
@@ -139,23 +139,24 @@ class _MyHomePageState extends State<MyHomePage> {
                               shape: BoxShape.circle,
                               color: Colors.white,
                               border: Border.all(color: Colors.white, width: 1),
-                              boxShadow: _isPressed
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColors.secondary
-                                            .withOpacity(0.5),
-                                        offset: Offset(0, 0),
-                                        blurRadius: 50,
-                                      ),
-                                    ]
-                                  : [
-                                      BoxShadow(
-                                        color: AppColors.fontPrimary
-                                            .withOpacity(0.25),
-                                        offset: const Offset(0, 2),
-                                        blurRadius: 4,
-                                      ),
-                                    ],
+                              boxShadow:
+                                  _isPressed
+                                      ? [
+                                        BoxShadow(
+                                          color: AppColors.secondary
+                                              .withOpacity(0.5),
+                                          offset: Offset(0, 0),
+                                          blurRadius: 50,
+                                        ),
+                                      ]
+                                      : [
+                                        BoxShadow(
+                                          color: AppColors.fontPrimary
+                                              .withOpacity(0.25),
+                                          offset: const Offset(0, 2),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
                             ),
                           ),
                         ),
@@ -172,9 +173,12 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: _isPressed
-                                    ? AppColors.fontPrimary.withOpacity(0.25)
-                                    : AppColors.fontSecondary,
+                                color:
+                                    _isPressed
+                                        ? AppColors.fontPrimary.withOpacity(
+                                          0.25,
+                                        )
+                                        : AppColors.fontSecondary,
                                 width: 1,
                               ),
                             ),
@@ -204,16 +208,45 @@ class _MyHomePageState extends State<MyHomePage> {
             grabbing: GestureDetector(
               onTap: _toggleSheet,
               child: Container(
-                color: AppColors.primary,
-                alignment: Alignment.center, // Center the grab bar
-                child: Container(
-                  width: 48,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(12),
+                // color: AppColors.primary,
+                alignment: Alignment.topCenter, // Center the grab bar
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                      10,
+                    ), // Adjust top-left corner radius
+                    topRight: Radius.circular(
+                      10,
+                    ), // Adjust top-right corner radius
                   ),
                 ),
+                child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Drag indicator (the small bar in the middle)
+          Container(
+            width: 48,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          // Text under the drag indicator
+          const SizedBox(height: 8),
+          Text(
+            'Drag to expand',
+            style: TextStyle(
+              color: AppColors.fontPrimary, // Customize the text color
+              fontSize: 14, // Customize the text size
+              fontWeight: FontWeight.w500, // Customize the font weight
+            ),
+          ),
+        ],
+      ),
+
+                
               ),
             ),
             snappingPositions: const [
