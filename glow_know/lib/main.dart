@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Vespera',
+      title: 'INGREDIA',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Nunito',
