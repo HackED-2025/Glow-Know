@@ -80,11 +80,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _toggleSheet() {
-    _sheetController.snapToPosition(
-      _sheetController.currentPosition < 50
-          ? const SnappingPosition.factor(positionFactor: 1.0)
-          : const SnappingPosition.factor(positionFactor: 0.0),
-    );
+    // Toggle between open and closed sheet positions
+    if (_sheetController.currentPosition == 0.0) {
+      // If the sheet is closed, open it
+      _sheetController.snapToPosition(
+        const SnappingPosition.factor(
+          positionFactor: 1.0,
+          grabbingContentOffset: GrabbingContentOffset.bottom,
+        ),
+      );
+    } else {
+      // If the sheet is open, close it
+      _sheetController.snapToPosition(
+        const SnappingPosition.factor(
+          positionFactor: 0.0,
+          grabbingContentOffset: GrabbingContentOffset.top,
+        ),
+      );
+    }
   }
 
   @override
@@ -253,32 +266,67 @@ class _MyHomePageState extends State<MyHomePage> {
           // Snapping Sheet remains unchanged
           SnappingSheet(
             controller: _sheetController,
-            grabbingHeight: 60,
+            grabbingHeight: 60, // Adjusted grabbing height
             grabbing: GestureDetector(
               onTap: _toggleSheet,
               child: Container(
-                color: AppColors.primary,
-                alignment: Alignment.center,
-                child: Container(
-                  width: 40,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(12),
+                // color: AppColors.primary,
+                alignment: Alignment.topCenter, // Center the grab bar
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(
+                      10,
+                    ), // Adjust top-left corner radius
+                    topRight: Radius.circular(
+                      10,
+                    ), // Adjust top-right corner radius
                   ),
                 ),
+                child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Drag indicator (the small bar in the middle)
+          Container(
+            width: 48,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          // Text under the drag indicator
+          const SizedBox(height: 8),
+          Text(
+            'Drag to expand',
+            style: TextStyle(
+              color: AppColors.fontPrimary, // Customize the text color
+              fontSize: 14, // Customize the text size
+              fontWeight: FontWeight.w500, // Customize the font weight
+            ),
+          ),
+        ],
+      ),
+
+                
               ),
             ),
             snappingPositions: const [
-              SnappingPosition.factor(positionFactor: 0.0),
-              SnappingPosition.factor(positionFactor: 1.0),
+              SnappingPosition.factor(
+                positionFactor: 0.0,
+                grabbingContentOffset: GrabbingContentOffset.top,
+              ),
+              SnappingPosition.factor(
+                positionFactor: 1.0,
+                grabbingContentOffset: GrabbingContentOffset.bottom,
+              ),
             ],
             sheetBelow: SnappingSheetContent(
               draggable: true,
               child: Container(
                 color: AppColors.background,
                 padding: const EdgeInsets.all(20),
-                child: Column(
+                child: ListView(
                   children: [
                     Text(
                       'Product Information',
