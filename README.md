@@ -31,11 +31,11 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 
 ### Deployment
 
-### Screenshots
-
 ![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
 ## Ingredia: Nutrition
+
+Nutrition Repo: (https://github.com/HackED-2025/IngredientSafe-ios)
 
 "Ingredia: Nutrition" is designed for people with dietary restrictions. It can be difficult to search an entire shelf of unique products, especialy when working around restrictions and allergies. This proof of concept app makes it easy to quickly get an overview of items, so you don’t have to go through every single label.
 
@@ -43,12 +43,6 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 
 - Packaging text detection: Scan product labels for customized info based on personal dietary restrictions/preferences.
 - Allergen Alerts: Identify potential allergens in products.
-
-### Deployment
-
-### Screenshots
-
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
 ## 👥 Team Members
 - [Ashley Anderson](https://github.com/Precisshley)
