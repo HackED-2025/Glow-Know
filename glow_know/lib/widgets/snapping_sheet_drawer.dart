@@ -1,18 +1,10 @@
-// lib/widgets/snapping_sheet_drawer.dart
 import 'package:flutter/material.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
-import 'package:glow_know/widgets/recently_scanned_product_card.dart';
 import 'package:glow_know/utils/theme.dart';
-import 'package:glow_know/screens/preferences_screen.dart';
-import 'package:glow_know/screens/home_screen.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:glow_know/screens/camera_page.dart';
-import 'package:glow_know/assets/svgs.dart';
 import 'package:glow_know/screens/product_info_page.dart';
 import 'package:glow_know/models/product.dart';
-import 'package:glow_know/services/history_service.dart';
 import 'package:glow_know/screens/all_scanned_items_page.dart';
-
+import 'package:glow_know/screens/preferences_screen.dart';
 
 class SnappingSheetDrawer extends StatelessWidget {
   final SnappingSheetController controller;
@@ -36,7 +28,7 @@ class SnappingSheetDrawer extends StatelessWidget {
       controller: controller,
       grabbingHeight: 60,
       grabbing: GestureDetector(
-        onTap: onTap, //????
+        onTap: onTap,
         child: Container(
           alignment: Alignment.topCenter,
           decoration: BoxDecoration(
@@ -88,126 +80,93 @@ class SnappingSheetDrawer extends StatelessWidget {
           child: FutureBuilder<List<Product>>(
             future: historyFuture,
             builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                    final products = snapshot.data ?? [];
+              final products = snapshot.data ?? [];
 
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+              return ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                children: [
+                  if (products.isEmpty)
+                    const Center(
+                      child: Text(
+                        'Scan items to compare!',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    )
+                  else
+                    Column(
                       children: [
-                        if (products.isEmpty)
-                          const Center(
-                            child: Text(
-                              'Scan items to compare!',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          )
-                        else
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: 180, //120?
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: products.length,
-                                  itemBuilder: (context, index) {
-                                    final product = products[index];
-                                    //                 return Padding(
-                                  //         //   padding: const EdgeInsets.only(right: 10),
-                                  //         //   child: RecentlyScannedProductCard(
-                                  //         //     score: product['score'],
-                                  //         //     title: product['title'],
-                                  //         //   ),
-                                  //         // );
-                                    return GestureDetector(
-                                      onTap: () => _navigateToProduct(context, product),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(right: 16),
-                                        child: ProductCard(product: product),
-                                      ),
-                                    );
-                                  },
-
-                                  // itemBuilder: (context, index) {
-                                  //   final product = products[index];
-                                  //         //                 return Padding(
-                                  //         //   padding: const EdgeInsets.only(right: 10),
-                                  //         //   child: RecentlyScannedProductCard(
-                                  //         //     score: product['score'],
-                                  //         //     title: product['title'],
-                                  //         //   ),
-                                  //         // );
-                                  //   return GestureDetector(
-                                  //     onTap: () => _navigateToProduct(product),
-                                  //     child: Padding(
-                                  //       padding: const EdgeInsets.only(
-                                  //         right: 16,
-                                  //       ),
-                                  //       child: ProductCard(product: product),
-                                  //     ),
-                                  //   );
-                                  // },
+                        SizedBox(
+                          height: 180, //120?
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: products.length,
+                            itemBuilder: (context, index) {
+                              final product = products[index];
+                              return GestureDetector(
+                                onTap: () => _navigateToProduct(context, product),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 16),
+                                  child: ProductCard(product: product),
                                 ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 16), //20??
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AllScannedItemsPage(),
                               ),
-                              const SizedBox(height: 16), //20??
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => AllScannedItemsPage(),
-                                    ),
-                                  ).then((_) => refreshHistory());
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: const [
-                                    Text('View All'),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.arrow_forward, size: 16),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                                      // ElevatedButton(
-                                      //   onPressed: () {
-                                      //     Navigator.push(
-                                      //       context,
-                                      //       MaterialPageRoute(
-                                      //         builder: (context) => const PreferencesPage(),
-                                      //       ),
-                                      //     );
-                                      //   },
-                                      //   style: ElevatedButton.styleFrom(
-                                      //     backgroundColor: AppColors.primary,
-                                      //     minimumSize: const Size(double.infinity, 50),
-                                      //     shape: RoundedRectangleBorder(
-                                      //       borderRadius: BorderRadius.circular(8),
-                                      //     ),
-                                      //     padding: const EdgeInsets.symmetric(horizontal: 16),
-                                      //   ),
-                                      //   child: Container(
-                                      //     alignment: Alignment.centerLeft,
-                                      //     child: Text(
-                                      //       'Preferences',
-                                      //       style: TextStyle(
-                                      //         color: AppColors.background,
-                                      //         fontSize: 16,
-                                      //       ),
-                                      //     ),
-                                      //   ),
-                                      // ),
+                            ).then((_) => refreshHistory());
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: const [
+                              Text('View All'),
+                              SizedBox(width: 8),
+                              Icon(Icons.arrow_forward, size: 16),
                             ],
                           ),
-                        const SizedBox(height: 24),
-                        // ... keep preferences button
+                        ),
+                      ],
+                    ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PreferencesPage(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Preferences',
+                        style: TextStyle(
+                          color: AppColors.background,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               );
             },
@@ -217,78 +176,15 @@ class SnappingSheetDrawer extends StatelessWidget {
     );
   }
 
-
-          // child: ListView(
-          //   shrinkWrap: true,
-          //   padding: EdgeInsets.zero,
-          //   children: [
-          //     SizedBox(
-          //       height: 120,
-          //       child: ListView.builder(
-          //         scrollDirection: Axis.horizontal,
-          //         itemCount: recentProducts.length,
-          //         itemBuilder: (context, index) {
-          //           final product = recentProducts[index];
-              //       return Padding(
-              //         padding: const EdgeInsets.only(right: 10),
-              //         child: RecentlyScannedProductCard(
-              //           score: product['score'],
-              //           title: product['title'],
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
-              // const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => const PreferencesPage(),
-              //       ),
-              //     );
-              //   },
-              //   style: ElevatedButton.styleFrom(
-              //     backgroundColor: AppColors.primary,
-              //     minimumSize: const Size(double.infinity, 50),
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(8),
-//                   ),
-//                   padding: const EdgeInsets.symmetric(horizontal: 16),
-//                 ),
-//                 child: Container(
-//                   alignment: Alignment.centerLeft,
-//                   child: Text(
-//                     'Preferences',
-//                     style: TextStyle(
-//                       color: AppColors.background,
-//                       fontSize: 16,
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
   void _navigateToProduct(BuildContext context, Product product) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ProductInfoPage(product: product),
-    ),
-  );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductInfoPage(product: product),
+      ),
+    );
+  }
 }
-}
-
-
-
-
-
 
 class ProductCard extends StatelessWidget {
   final Product product;
