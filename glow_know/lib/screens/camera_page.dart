@@ -7,6 +7,7 @@ import 'package:glow_know/models/product.dart';
 import 'package:glow_know/services/history_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../environment.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -41,6 +42,12 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
+  static Future<Map<String, dynamic>> _askDeepSeek(String ingredients) async {
+
+
+    return Map();
+  }
+
   void _handleBarcode(String scannedData) async {
     final now = DateTime.now();
 
@@ -58,10 +65,12 @@ class _CameraPageState extends State<CameraPage> {
 
     try {
       print('Fetching...');
-      final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/$scannedData?key=eefd39939a2b498eca937819b56c956c998335e694f38204b2e4630e6a1aaf58'))
+      final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/$scannedData?key=${Environment.goUpcKey}'))
         .timeout(const Duration(seconds: 10));
       final responseData = jsonDecode(response.body);
       print(responseData);
+
+
       
 
       // Create new product (using sample data)
