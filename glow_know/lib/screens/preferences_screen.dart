@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/theme.dart';
 
 class PreferencesPage extends StatefulWidget {
   const PreferencesPage({super.key});
@@ -49,9 +50,47 @@ class _PreferencesPageState extends State<PreferencesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Product Preferences')),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Profile'),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leadingWidth: 80,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.arrow_back_ios,
+                  color: AppColors.fontPrimary,
+                  size: 14, // Smaller icon
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  'Back',
+                  style: TextStyle(
+                    color: AppColors.fontPrimary,
+                    fontSize: 12, // Smaller text
+                    height: 1.2, // Tighter line height
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -61,7 +100,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
               'Normal',
               'Sensitive',
             ], _selectedSkinTypes),
-            const SizedBox(height: 24),
+
+            const Divider(height: 40, thickness: 1, color: Color(0xFFE0E0E0)),
+
             _buildCategory('Hair Type', [
               'Straight',
               'Wavy',
@@ -74,7 +115,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
               'Medium',
               'Coarse',
             ], _selectedHairTypes),
-            const SizedBox(height: 24),
+
+            const Divider(height: 40, thickness: 1, color: Color(0xFFE0E0E0)),
+
             _buildVeganToggle(),
           ],
         ),
@@ -92,29 +135,42 @@ class _PreferencesPageState extends State<PreferencesPage> {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: AppColors.fontPrimary,
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children:
               options.map((option) {
                 final isSelected = selected.contains(option);
-                return FilterChip(
+                return ChoiceChip(
                   label: Text(
                     option,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+                      color:
+                          isSelected
+                              ? AppColors.background
+                              : AppColors.fontPrimary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   selected: isSelected,
-                  selectedColor: Colors.purple[400], // Purple color
-                  backgroundColor: Colors.grey[300],
-                  checkmarkColor: Colors.transparent,
-                  elevation: 0,
+                  backgroundColor: AppColors.background,
+                  selectedColor: AppColors.primary,
+                  side: BorderSide(
+                    color: AppColors.fontPrimary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  showCheckmark: false,
                   pressElevation: 0,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   onSelected: (_) => _toggleSelection(selected, option),
                 );
               }).toList(),
@@ -124,24 +180,32 @@ class _PreferencesPageState extends State<PreferencesPage> {
   }
 
   Widget _buildVeganToggle() {
-    return Row(
-      children: [
-        const Text(
-          'Vegan Friendly',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const Spacer(),
-        Switch(
-          value: _isVegan,
-          activeColor: Colors.purple[400], // Purple color for switch
-          onChanged: (value) {
-            setState(() {
-              _isVegan = value;
-              _savePreferences();
-            });
-          },
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            'Vegan Friendly',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.fontPrimary,
+            ),
+          ),
+          const Spacer(),
+          Switch(
+            value: _isVegan,
+            activeColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withOpacity(0.2),
+            onChanged: (value) {
+              setState(() {
+                _isVegan = value;
+                _savePreferences();
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }
