@@ -31,7 +31,6 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 
 ### Deployment
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
 
 ## Ingredia: Nutrition
 
