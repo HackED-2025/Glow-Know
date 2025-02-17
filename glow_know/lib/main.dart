@@ -4,6 +4,7 @@ import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/screens/camera_page.dart';
 import 'package:glow_know/screens/preferences_screen.dart';
 import 'package:glow_know/utils/theme.dart';
+import 'package:glow_know/assets/logo.dart';
 
 void main() => runApp(const MyApp());
 
@@ -88,33 +89,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Main content
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          // Full-screen container with two positioned groups
+          Container(
+            height: screenHeight,
+            width: double.infinity,
+            child: Stack(
               children: [
-                // Header with logo and app name
-                const SizedBox(height: 60), // Adjust spacing as needed
-                SvgPicture.asset('assets/logo.svg', height: 100),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 48),
-                  child: Text(
-                    'VESPERA',
-                    style: TextStyle(
-                      color: AppColors.fontPrimary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.normal,
-                      letterSpacing: 4.0,
-                    ),
+                // Header group: logo and title moved a bit lower
+                Positioned(
+                  top: 100, // Adjust to move header lower
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SvgPicture.string(inlineSvg, height: 50),
+                      const SizedBox(height: 10),
+                      Text(
+                        'VESPERA',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.normal,
+                          letterSpacing: 4.0,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                // Your original center content
-                Center(
+                // Scan area: tap message and camera button, spaced and fairly centered
+                Positioned(
+                  top: screenHeight * 0.4, // Adjust to position scan area lower
+                  left: 0,
+                  right: 0,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
