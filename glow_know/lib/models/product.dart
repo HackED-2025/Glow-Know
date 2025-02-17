@@ -6,9 +6,11 @@ class Product {
   final String ingredientsList;
   final String ingredientsListSummary;
   final String ingredientsListBreakdown;
+  final String productImage;
 
   Product({
     required this.productName,
+    required this.productImage,
     required this.productScore,
     required this.productEnvironmentScore,
     required this.productType,
@@ -19,6 +21,7 @@ class Product {
 
   Map<String, dynamic> toJson() => {
     'productName': productName,
+    'productImage': productImage,
     'productScore': productScore,
     'productEnvironmentScore': productEnvironmentScore,
     'productType': productType,
@@ -29,6 +32,7 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     productName: json['productName'],
+    productImage: json['productImage'],
     productScore: json['productScore'],
     productEnvironmentScore: json['productEnvironmentScore'],
     productType: json['productType'],
