@@ -1,4 +1,5 @@
 class Product {
+  final String productBarcode;
   final String productName;
   final double productScore;
   final double productEnvironmentScore;
@@ -9,6 +10,7 @@ class Product {
   final String productImage;
 
   Product({
+    required this.productBarcode,
     required this.productName,
     required this.productImage,
     required this.productScore,
@@ -20,6 +22,7 @@ class Product {
   });
 
   Map<String, dynamic> toJson() => {
+    'productBarcode': productBarcode,
     'productName': productName,
     'productImage': productImage,
     'productScore': productScore,
@@ -31,6 +34,7 @@ class Product {
   };
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
+    productBarcode: json['productBarcode'],
     productName: json['productName'],
     productImage: json['productImage'],
     productScore: json['productScore'],

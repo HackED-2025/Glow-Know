@@ -66,6 +66,7 @@ class _CameraPageState extends State<CameraPage> {
       final responseData = jsonDecode(response.body);
 
       final newProduct = Product(
+        productBarcode: responseData['product']['barcode'],
         productName: responseData['product']['name'],
         productImage: responseData['product']['imageUrl'],
         productScore: 4.5,
