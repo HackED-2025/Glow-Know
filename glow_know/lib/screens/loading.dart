@@ -42,10 +42,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
       body: jsonEncode({
         'model': 'gpt-4o-mini',
         'messages': [
-          {'role': 'system', 'content': """Return a report about the suitability of each of these cosmetic product ingredients.
+          {'role': 'system', 'content': """Return a report about the suitability of each of these cosmetic product ingredients to the user.
                                            The user's skin type is ${skinTypes.join(', ')}, hair type is ${hairTypes.join(', ')}, and they are ${isVegan ? 'vegan' : 'not vegan'}.
-                                           First, return the word "HEALTH RATING: " followed by the health rating of the product from 1 - 10, 1 being lowest risk, 10 being highest risk.
-                                           Second, return the word "GENERAL RATING: " followed by the suitability of the product for the user, factoring in the health rating, their skin type, hair type, and whether they're vegan. 1 being most suitable, 10 being least suitable.
+                                           First, return the word "HEALTH RATING: " followed by the overall health rating of the whole product from 1 - 10, 1 being lowest risk, 10 being highest risk.
+                                           Second, return the word "GENERAL RATING: " followed by the overall suitability of the product for the user, factoring in the health rating, their skin type, hair type, and whether they're vegan. 1 being most suitable, 10 being least suitable.
                                            Then, return the word "SUMMARY: " followed by a simple and brief summary of each ingredient. The summary should be understandable by a layman.
                                            Each key is the name of the ingredient and each value is the brief health summary of the ingredient, no more then 20 words. 
                                            Don't include ** characters. """},
@@ -55,6 +55,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
     final responseJson = jsonDecode(response.body);
     final content = responseJson['choices'][0]['message']['content'];
+    print(content);
 
     final summaryIndex = content.indexOf('SUMMARY: ');
     final healthRatingIndex = content.indexOf ('HEALTH RATING: ');
