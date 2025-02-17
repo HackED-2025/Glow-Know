@@ -76,7 +76,7 @@ class _CameraPageState extends State<CameraPage> {
     final healthRatingIndex = content.indexOf ('HEALTH RATING: ');
     final generalRatingIndex = content.indexOf('GENERAL RATING: ');
 
-    final ingredientsList = content.substring(summaryIndex + 11).split('\n');
+    final ingredientsList = content.substring(summaryIndex + 11).split('\n').map((ingredient) => ingredient.split(': ')).toList();
     final rating = content.substring(generalRatingIndex + 15, summaryIndex - 1);
     final healthRating = content.substring(healthRatingIndex + 14, generalRatingIndex - 1);
 
