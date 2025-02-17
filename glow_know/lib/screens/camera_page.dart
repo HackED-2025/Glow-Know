@@ -7,6 +7,7 @@ import '../services/history_service.dart';
 import '../utils/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../environment.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -41,6 +42,40 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
+  static Future<List<String>> _askAi(String ingredients) async {
+    final response = await http.post(
+      Uri.parse('https://api.openai.com/v1/chat/completions'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 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',
+      },
+      body: jsonEncode({
+        'model': 'gpt-4o-mini',
+        'messages': [
+          {'role': 'system', 'content': """Return a report about the danger of each of these cosmetic product ingredients.
+                                           First, return the word "RATING: " followed by the health rating of the product from 1 - 10, 1 being safe, 10 being highest risk.
+                                           Then, return the word "SUMMARY: " followed by a brief summary of each ingredient.
+                                           Each key is the name of the ingredient and each value is the brief health summary of the ingredient, no more then 20 words. 
+                                           Don't include ** characters. """},
+          {'role': 'user', 'content': ingredients},
+        ],
+      }),);
+
+    final responseJson = jsonDecode(response.body);
+    final content = responseJson['choices'][0]['message']['content'];
+
+    final summaryIndex = content.indexOf('SUMMARY: ');
+    final ratingIndex = content.indexOf('RATING: ');
+
+    final ingredientsList = content.substring(summaryIndex + 9);
+
+    final rating = content.substring(ratingIndex + 8, summaryIndex - 1);
+
+    print(rating);
+    
+    return [rating, ingredientsList];
+  }
+
   void _handleBarcode(String scannedData) async {
     final now = DateTime.now();
 
@@ -56,23 +91,21 @@ class _CameraPageState extends State<CameraPage> {
     });
 
     try {
-      final response = await http
-          .get(
-            Uri.parse(
-              'https://go-upc.com/api/v1/code/$scannedData?key=eefd39939a2b498eca937819b56c956c998335e694f38204b2e4630e6a1aaf58',
-            ),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/$scannedData?key=${Environment.goUpcKey}'))
+        .timeout(const Duration(seconds: 10));
       final responseData = jsonDecode(response.body);
+
+      print('Fetching...');
+      final aiResponse = await _askAi(responseData['product']['ingredients']['text']);
 
       final newProduct = Product(
         productName: responseData['product']['name'],
+        productScore: double.parse(aiResponse[0]),
         productImage: responseData['product']['imageUrl'],
-        productScore: 4.5,
         productEnvironmentScore: 3.8,
         productType: 'Skincare',
         ingredientsList: 'Nada',
-        ingredientsListSummary: 'Moisturizing formula',
+        ingredientsListSummary: aiResponse[1],
         ingredientsListBreakdown: 'Contains 5 beneficial ingredients',
       );
 
