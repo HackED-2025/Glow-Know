@@ -66,7 +66,6 @@ class _CameraPageState extends State<CameraPage> {
       final responseData = jsonDecode(response.body);
 
       final newProduct = Product(
-        productBarcode: responseData['product']['barcode'],
         productName: responseData['product']['name'],
         productImage: responseData['product']['imageUrl'],
         productScore: 4.5,
@@ -82,9 +81,7 @@ class _CameraPageState extends State<CameraPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder:
-              (context) =>
-                  ProductInfoPage(barcode: scannedData, product: newProduct),
+          builder: (context) => ProductInfoPage(product: newProduct),
         ),
       );
     } on TimeoutException catch (e) {

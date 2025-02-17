@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:glow_know/models/product.dart';
 
 class ProductInfoPage extends StatelessWidget {
-  final String barcode;
   final Product product;
 
-  const ProductInfoPage({super.key, required this.barcode, required this.product});
+  const ProductInfoPage({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +15,16 @@ class ProductInfoPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Scanned Barcode: $barcode',
-              style: const TextStyle(fontSize: 18),
-            ),
             const SizedBox(height: 20),
             Text(
               'Product Name: ${product.productName}',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
-            Text('Product Image: ${product.productImage}', style: TextStyle(fontSize: 16)),
+            Text(
+              'Product Image: ${product.productImage}',
+              style: TextStyle(fontSize: 16),
+            ),
             const SizedBox(height: 10),
             const Text(
               'Description: This is a sample product description.',
