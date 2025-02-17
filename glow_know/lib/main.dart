@@ -4,7 +4,7 @@ import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/screens/camera_page.dart';
 import 'package:glow_know/screens/preferences_screen.dart';
 import 'package:glow_know/utils/theme.dart';
-import 'package:glow_know/assets/logo.dart';
+import 'package:glow_know/assets/svgs.dart';
 
 void main() => runApp(const MyApp());
 
@@ -44,6 +44,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
   bool _isPressed = false;
+
+  // Dummy list of recently scanned products
+  final List<Map<String, dynamic>> _recentProducts = [
+    {'score': 10, 'title': 'Product A'},
+    {'score': 7, 'title': 'Product B'},
+    {'score': 4, 'title': 'Product C'},
+    {'score': 2, 'title': 'Product D'},
+  ];
 
   Route _createRoute() {
     return PageRouteBuilder(
@@ -103,19 +111,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Full-screen container with two positioned groups
+          // Main content with positioned header and scan area
           Container(
             height: screenHeight,
             width: double.infinity,
             child: Stack(
               children: [
-                // Header group: logo and title moved a bit lower
+                // Header: logo and title, positioned a bit lower
                 Positioned(
-                  top: 100, // Adjust to move header lower
+                  top: 100,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -135,9 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ),
-                // Scan area: tap message and camera button, spaced and fairly centered
+                // Scan area: tap message and camera button, centered
                 Positioned(
-                  top: screenHeight * 0.4, // Adjust to position scan area lower
+                  top: screenHeight * 0.3,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -263,52 +272,44 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
-          // Snapping Sheet remains unchanged
+          // Snapping Sheet (drawer)
           SnappingSheet(
             controller: _sheetController,
-            grabbingHeight: 60, // Adjusted grabbing height
+            grabbingHeight: 60,
             grabbing: GestureDetector(
               onTap: _toggleSheet,
               child: Container(
-                // color: AppColors.primary,
-                alignment: Alignment.topCenter, // Center the grab bar
+                alignment: Alignment.topCenter,
                 decoration: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(
-                      10,
-                    ), // Adjust top-left corner radius
-                    topRight: Radius.circular(
-                      10,
-                    ), // Adjust top-right corner radius
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
                   ),
                 ),
                 child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Drag indicator (the small bar in the middle)
-          Container(
-            width: 48,
-            height: 6,
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          // Text under the drag indicator
-          const SizedBox(height: 8),
-          Text(
-            'Drag to expand',
-            style: TextStyle(
-              color: AppColors.fontPrimary, // Customize the text color
-              fontSize: 14, // Customize the text size
-              fontWeight: FontWeight.w500, // Customize the font weight
-            ),
-          ),
-        ],
-      ),
-
-                
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Drag indicator
+                    Container(
+                      width: 48,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Drag to expand',
+                      style: TextStyle(
+                        color: AppColors.fontPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             snappingPositions: const [
@@ -326,16 +327,31 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 color: AppColors.background,
                 padding: const EdgeInsets.all(20),
-                child: ListView(
+                // Removed the "Product Information" text
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'Product Information',
-                      style: TextStyle(
-                        color: AppColors.fontPrimary,
-                        fontSize: 20,
+                    // Carousel of recently scanned products
+                    SizedBox(
+                      height: 120,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _recentProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = _recentProducts[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: RecentlyScannedProductCard(
+                              score: product['score'],
+                              title: product['title'],
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
+                    // Preferences Button: more square and text aligned to left
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
@@ -349,14 +365,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         backgroundColor: AppColors.primary,
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
-                      child: Text(
-                        'Preferences',
-                        style: TextStyle(
-                          color: AppColors.background,
-                          fontSize: 16,
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Preferences',
+                          style: TextStyle(
+                            color: AppColors.background,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -364,6 +384,80 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A card representing a recently scanned product with an SVG hexagon underlay.
+class RecentlyScannedProductCard extends StatelessWidget {
+  final int score;
+  final String title;
+  const RecentlyScannedProductCard({
+    Key? key,
+    required this.score,
+    required this.title,
+  }) : super(key: key);
+
+  // Returns the appropriate color based on the score.
+  Color getColorForScore(int score) {
+    if (score >= 8) {
+      return Colors.red;
+    } else if (score >= 6) {
+      return Colors.orange;
+    } else if (score >= 4) {
+      return Colors.yellow;
+    } else {
+      return Colors.green;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100, // A square container
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        ],
+      ),
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Underlay the SVG hexagon with the dynamic color and overlay the score text
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SvgPicture.string(
+                hexagonSvg,
+                width: 60,
+                height: 60,
+                colorFilter: ColorFilter.mode(
+                  getColorForScore(score),
+                  BlendMode.srcIn,
+                ),
+              ),
+              Text(
+                '$score',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 12, color: Colors.black87),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

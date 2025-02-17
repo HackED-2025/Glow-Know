@@ -203,7 +203,7 @@ class _CameraPageState extends State<CameraPage> {
                   const Spacer(),
                   Center(
                     child: Text(
-                      'Powered by Vespera',
+                      'Powered by Ingredia',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.fontPrimary.withOpacity(0.6),
