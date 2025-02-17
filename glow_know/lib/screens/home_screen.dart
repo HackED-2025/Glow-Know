@@ -2,21 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/screens/camera_page.dart';
-// import 'package:glow_know/screens/preferences_screen.dart';
-// import 'package:glow_know/widgets/recently_scanned_product_card.dart';
 import 'package:glow_know/utils/theme.dart';
 import 'package:glow_know/assets/svgs.dart';
-
 
 import 'package:glow_know/models/product.dart';
 import 'package:glow_know/services/history_service.dart';
 
-
-// import 'package:flutter/material.dart';
 import 'package:glow_know/widgets/snapping_sheet_drawer.dart';
-// import 'package:snapping_sheet/snapping_sheet.dart';
-// import 'package:glow_know/screens/product_info_page.dart';
-// import 'package:glow_know/screens/all_scanned_items_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -24,7 +16,6 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
-
 
 class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
@@ -34,21 +25,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _refreshHistory(); // Initialize history
+    _refreshHistory();
+  }
+
+  Future<List<Product>> fetchProducts() async {
+    return await HistoryService.getHistory();
   }
 
   void _refreshHistory() {
     setState(() {
-      _historyFuture = HistoryService.getHistory(); // Correct initialization
+      _historyFuture = fetchProducts();
     });
   }
-
-  final List<Map<String, dynamic>> _recentProducts = [
-    {'score': 10, 'title': 'Product A'},
-    {'score': 7, 'title': 'Product B'},
-    {'score': 4, 'title': 'Product C'},
-    {'score': 2, 'title': 'Product D'},
-  ];
 
   Route _createRoute() {
     return PageRouteBuilder(
@@ -266,16 +254,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
           ),
+
           // Snapping Sheet (drawer)
-          
           SnappingSheetDrawer(
             controller: _sheetController,
             onTap: _toggleSheet,
-            recentProducts: _recentProducts,
-            historyFuture: _historyFuture, // Pass it here
+            historyFuture: _historyFuture,
             refreshHistory: _refreshHistory,
           ),
-
         ],
       ),
     );

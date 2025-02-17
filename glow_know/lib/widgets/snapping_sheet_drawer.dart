@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:glow_know/assets/svgs.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/utils/theme.dart';
 import 'package:glow_know/screens/product_info_page.dart';
 import 'package:glow_know/models/product.dart';
 import 'package:glow_know/screens/all_scanned_items_page.dart';
 import 'package:glow_know/screens/preferences_screen.dart';
+import 'package:glow_know/widgets/recently_scanned_product_card.dart';
 
 class SnappingSheetDrawer extends StatelessWidget {
   final SnappingSheetController controller;
   final VoidCallback onTap;
-  final List<Map<String, dynamic>> recentProducts;
-  final Future<List<Product>> historyFuture; // Add this parameter
+  final Future<List<Product>> historyFuture;
   final VoidCallback refreshHistory;
 
   const SnappingSheetDrawer({
     super.key,
     required this.controller,
     required this.onTap,
-    required this.recentProducts,
-    required this.historyFuture, // Pass this to constructor
-    required this.refreshHistory, // Pass this to constructor
+    required this.historyFuture,
+    required this.refreshHistory,
   });
 
   @override
@@ -88,7 +89,7 @@ class SnappingSheetDrawer extends StatelessWidget {
 
               return ListView(
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   if (products.isEmpty)
                     const Center(
@@ -100,71 +101,133 @@ class SnappingSheetDrawer extends StatelessWidget {
                   else
                     Column(
                       children: [
-                        SizedBox(
-                          height: 180, //120?
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: products.length,
-                            itemBuilder: (context, index) {
-                              final product = products[index];
-                              return GestureDetector(
-                                onTap: () => _navigateToProduct(context, product),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 16),
-                                  child: ProductCard(product: product),
+                        GridView.count(
+                          crossAxisCount: 2,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          childAspectRatio:
+                              0.9, // Adjusted for better aspect ratio
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 16,
+                          padding: const EdgeInsets.all(8),
+                          children:
+                              products
+                                  .take(4)
+                                  .map(
+                                    (product) => GestureDetector(
+                                      onTap:
+                                          () => _navigateToProduct(
+                                            context,
+                                            product,
+                                          ),
+                                      child: RecentlyScannedProductCard(
+                                        score: product.productScore.round(),
+                                        title: product.productName,
+                                        imageUrl: product.productImage,
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
+                        if (products.length > 1)
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AllScannedItemsPage(),
                                 ),
-                              );
+                              ).then((_) => refreshHistory());
                             },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Text('View More'),
+                                SizedBox(width: 8),
+                                Icon(Icons.arrow_forward, size: 16),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16), //20??
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AllScannedItemsPage(),
-                              ),
-                            ).then((_) => refreshHistory());
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              Text('View All'),
-                              SizedBox(width: 8),
-                              Icon(Icons.arrow_forward, size: 16),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   const SizedBox(height: 20),
-                  ElevatedButton(
+                  OutlinedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const PreferencesPage(),
                         ),
-                      );
+                      ).then((_) {
+                        refreshHistory();
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          controller.snapToPosition(
+                            const SnappingPosition.factor(
+                              positionFactor: 0.0,
+                              grabbingContentOffset: GrabbingContentOffset.top,
+                            ),
+                          );
+                        });
+                      });
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                        Set<WidgetState> states,
+                      ) {
+                        return states.contains(WidgetState.pressed)
+                            ? AppColors
+                                .primary // Filled color when pressed
+                            : Colors.transparent; // Transparent by default
+                      }),
+                      side: WidgetStateProperty.all(
+                        const BorderSide(color: AppColors.primary),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Preferences',
-                        style: TextStyle(
-                          color: AppColors.background,
-                          fontSize: 16,
+                      minimumSize: WidgetStateProperty.all(
+                        const Size(double.infinity, 50),
+                      ),
+                      padding: WidgetStateProperty.all(
+                        const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      shape: WidgetStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.string(
+                          pencilSvg,
+                          height: 20,
+                          colorFilter: ColorFilter.mode(
+                            WidgetStateProperty.resolveWith<Color>((
+                              Set<WidgetState> states,
+                            ) {
+                              return states.contains(WidgetState.pressed)
+                                  ? AppColors
+                                      .background // SVG color when pressed
+                                  : AppColors.secondary; // SVG color by default
+                            }).resolve({}),
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Preferences',
+                          style: TextStyle(
+                            color: WidgetStateProperty.resolveWith<Color>((
+                              Set<WidgetState> states,
+                            ) {
+                              return states.contains(WidgetState.pressed)
+                                  ? AppColors
+                                      .background // Text color when pressed
+                                  : AppColors.primary; // Text color by default
+                            }).resolve({}),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -183,86 +246,5 @@ class SnappingSheetDrawer extends StatelessWidget {
         builder: (context) => ProductInfoPage(product: product),
       ),
     );
-  }
-}
-
-class ProductCard extends StatelessWidget {
-  final Product product;
-
-  const ProductCard({super.key, required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    product.productImage,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getScoreColor(product.productScore),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '${product.productScore}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              product.productName,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getScoreColor(double score) {
-    final int roundedScore = score.round();
-    if (roundedScore >= 8) return Colors.red;
-    if (roundedScore >= 6) return Colors.orange;
-    if (roundedScore >= 4) return Colors.yellow;
-    return Colors.green;
   }
 }
