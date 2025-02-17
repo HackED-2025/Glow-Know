@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/product.dart';
 import 'dart:convert';
+import '../models/product.dart';
 
 class HistoryService {
   static const String _key = 'productHistory';
