@@ -13,8 +13,10 @@ import 'package:glow_know/services/history_service.dart';
 
 
 // import 'package:flutter/material.dart';
-import 'package:glow_know/widgets/snapping_sheet_drawer.dart';
+// import 'package:glow_know/widgets/snapping_sheet_drawer.dart';
 // import 'package:snapping_sheet/snapping_sheet.dart';
+import 'package:glow_know/screens/product_info_page.dart';
+import 'package:glow_know/screens/all_scanned_items_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -266,15 +268,226 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           // Snapping Sheet (drawer)
           // 
-          SnappingSheetDrawer(
+          // SnappingSheetDrawer(
+          //   controller: _sheetController,
+          //   onTap: _toggleSheet,
+          //   recentProducts: _recentProducts,
+          //   historyFuture: _historyFuture, // Pass it here
+          //   refreshHistory: _refreshHistory,
+          // ),
+
+          SnappingSheet(
             controller: _sheetController,
-            onTap: _toggleSheet,
-            recentProducts: _recentProducts,
-            historyFuture: _historyFuture, // Pass it here
-            refreshHistory: _refreshHistory,
+            grabbingHeight: 60,
+            grabbing: GestureDetector(
+              onTap: _toggleSheet,
+              child: Container(
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            snappingPositions: const [
+              SnappingPosition.factor(
+                positionFactor: 0.0,
+                grabbingContentOffset: GrabbingContentOffset.top,
+              ),
+              SnappingPosition.factor(
+                positionFactor: 1.0,
+                grabbingContentOffset: GrabbingContentOffset.bottom,
+              ),
+            ],
+            sheetBelow: SnappingSheetContent(
+              draggable: true,
+              child: Container(
+                color: AppColors.background,
+                padding: const EdgeInsets.all(20),
+                child: FutureBuilder<List<Product>>(
+                  future: _historyFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final products = snapshot.data ?? [];
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (products.isEmpty)
+                          const Center(
+                            child: Text(
+                              'Scan items to compare!',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        else
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 180,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: products.length,
+                                  itemBuilder: (context, index) {
+                                    final product = products[index];
+                                    return GestureDetector(
+                                      onTap: () => _navigateToProduct(product),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 16,
+                                        ),
+                                        child: ProductCard(product: product),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => AllScannedItemsPage(),
+                                    ),
+                                  ).then((_) => _refreshHistory());
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Text('View All'),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.arrow_forward, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(height: 24),
+                        // ... keep preferences button
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  void _navigateToProduct(Product product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductInfoPage(product: product),
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    product.productImage,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getScoreColor(product.productScore),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${product.productScore}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              product.productName,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getScoreColor(double score) {
+    final int roundedScore = score.round();
+    if (roundedScore >= 8) return Colors.red;
+    if (roundedScore >= 6) return Colors.orange;
+    if (roundedScore >= 4) return Colors.yellow;
+    return Colors.green;
   }
 }

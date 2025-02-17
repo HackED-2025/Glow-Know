@@ -13,6 +13,7 @@ import 'package:glow_know/models/product.dart';
 import 'package:glow_know/services/history_service.dart';
 import 'package:glow_know/screens/all_scanned_items_page.dart';
 
+
 class SnappingSheetDrawer extends StatelessWidget {
   final SnappingSheetController controller;
   final VoidCallback onTap;
