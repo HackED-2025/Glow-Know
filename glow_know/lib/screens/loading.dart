@@ -37,7 +37,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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',
+        'Authorization': 'Bearer ${Environment.openAiKey}',
       },
       body: jsonEncode({
         'model': 'gpt-4o-mini',
@@ -72,8 +72,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   Future<void> _apiCalls() async {
     
-    final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/${widget.barcode}?key=${Environment.goUpcKey}'))
-      .timeout(const Duration(seconds: 10));
+    final response = await http.get(Uri.parse('https://go-upc.com/api/v1/code/${widget.barcode}?key=${Environment.goUpcKey}'));
     final responseData = jsonDecode(response.body);
 
     print('Fetching...');
