@@ -52,12 +52,45 @@ class _PreferencesPageState extends State<PreferencesPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Product Preferences'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.background,
+        title: const Text('Profile'),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leadingWidth: 80,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.arrow_back_ios,
+                  color: AppColors.fontPrimary,
+                  size: 14, // Smaller icon
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  'Back',
+                  style: TextStyle(
+                    color: AppColors.fontPrimary,
+                    fontSize: 12, // Smaller text
+                    height: 1.2, // Tighter line height
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -67,7 +100,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
               'Normal',
               'Sensitive',
             ], _selectedSkinTypes),
-            const SizedBox(height: 24),
+
+            const Divider(height: 40, thickness: 1, color: Color(0xFFE0E0E0)),
+
             _buildCategory('Hair Type', [
               'Straight',
               'Wavy',
@@ -80,7 +115,9 @@ class _PreferencesPageState extends State<PreferencesPage> {
               'Medium',
               'Coarse',
             ], _selectedHairTypes),
-            const SizedBox(height: 24),
+
+            const Divider(height: 40, thickness: 1, color: Color(0xFFE0E0E0)),
+
             _buildVeganToggle(),
           ],
         ),
@@ -98,13 +135,13 @@ class _PreferencesPageState extends State<PreferencesPage> {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
             color: AppColors.fontPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -117,19 +154,23 @@ class _PreferencesPageState extends State<PreferencesPage> {
                     style: TextStyle(
                       color:
                           isSelected
-                              ? AppColors.fontSecondary
-                              : AppColors.primary,
+                              ? AppColors.background
+                              : AppColors.fontPrimary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   selected: isSelected,
                   backgroundColor: AppColors.background,
-                  selectedColor: AppColors.secondary.withOpacity(0.3),
-                  side: BorderSide(color: AppColors.secondary, width: 1),
+                  selectedColor: AppColors.primary,
+                  side: BorderSide(
+                    color: AppColors.fontPrimary.withOpacity(0.2),
+                    width: 1,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  showCheckmark: false, // Add this line
-                  pressElevation: 0, // Add this line to remove press effect
+                  showCheckmark: false,
+                  pressElevation: 0,
                   onSelected: (_) => _toggleSelection(selected, option),
                 );
               }).toList(),
@@ -139,29 +180,32 @@ class _PreferencesPageState extends State<PreferencesPage> {
   }
 
   Widget _buildVeganToggle() {
-    return Row(
-      children: [
-        Text(
-          'Vegan Friendly',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.fontPrimary,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            'Vegan Friendly',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.fontPrimary,
+            ),
           ),
-        ),
-        const Spacer(),
-        Switch(
-          value: _isVegan,
-          activeColor: AppColors.secondary,
-          activeTrackColor: AppColors.secondary.withOpacity(0.4),
-          onChanged: (value) {
-            setState(() {
-              _isVegan = value;
-              _savePreferences();
-            });
-          },
-        ),
-      ],
+          const Spacer(),
+          Switch(
+            value: _isVegan,
+            activeColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withOpacity(0.2),
+            onChanged: (value) {
+              setState(() {
+                _isVegan = value;
+                _savePreferences();
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }

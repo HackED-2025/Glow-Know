@@ -14,7 +14,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Glow Know',
-      theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
+      theme: ThemeData(
+        scaffoldBackgroundColor: AppColors.background,
+        fontFamily: 'Nunito',
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w700),
+          displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+          titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          titleMedium: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+      ),
       home: const MyHomePage(),
     );
   }
