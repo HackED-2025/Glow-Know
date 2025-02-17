@@ -26,6 +26,7 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 - Barcode Scanning: Quickly scan cosmetics and skincare products.
 - Ingredient Breakdown: Get detailed explanations of each ingredient and its purpose.
 - Allergen Alerts: Identify potential irritants or allergens for your skin type.
+- Health Score: See how the product compares to others.
 - Personalized Insights: Save your preferences for tailored recommendations.
 
 ### Deployment
@@ -39,9 +40,9 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 "Ingredia: Nutrition" is designed for people with dietary restrictions. It can be difficult to search an entire shelf of unique products, especialy when working around restrictions and allergies. This proof of concept app makes it easy to quickly get an overview of items, so you don’t have to go through every single label.
 
 ### Features
-TBD
 
-- Select blessed condition
+- Packaging text detection: Scan product labels for customized info based on personal dietary restrictions/preferences.
+- Allergen Alerts: Identify potential allergens in products.
 
 ### Deployment
 
