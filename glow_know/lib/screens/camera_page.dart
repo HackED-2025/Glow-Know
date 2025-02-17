@@ -111,7 +111,7 @@ class _CameraPageState extends State<CameraPage> {
         productName: responseData['product']['name'],
         productScore: double.parse(aiResponse[0]),
         productImage: responseData['product']['imageUrl'],
-        productHealthScore: 3.8,
+        productHealthScore: double.parse(aiResponse[0]),
         productType: 'Skincare',
         ingredientsList: 'Nada',
         ingredientsListSummary: aiResponse[2],
