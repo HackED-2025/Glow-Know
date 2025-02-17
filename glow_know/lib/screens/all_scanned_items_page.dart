@@ -5,9 +5,6 @@ import 'package:glow_know/screens/product_info_page.dart';
 import 'package:glow_know/services/history_service.dart';
 
 class AllScannedItemsPage extends StatefulWidget {
-  final List<Product> products;
-  const AllScannedItemsPage({super.key, required this.products});
-
   @override
   _AllScannedItemsPageState createState() => _AllScannedItemsPageState();
 }

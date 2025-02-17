@@ -385,9 +385,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     context,
                                     MaterialPageRoute(
                                       builder:
-                                          (context) => AllScannedItemsPage(
-                                            products: products,
-                                          ),
+                                          (context) => AllScannedItemsPage(),
                                     ),
                                   ).then((_) => _refreshHistory());
                                 },
