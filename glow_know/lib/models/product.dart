@@ -4,7 +4,7 @@ class Product {
   final double productHealthScore;
   final String productType;
   final String ingredientsList;
-  final String ingredientsListSummary;
+  final List ingredientsListSummary;
   final String ingredientsListBreakdown;
   final String productImage;
 
