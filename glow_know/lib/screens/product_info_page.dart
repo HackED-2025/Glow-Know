@@ -26,7 +26,7 @@ class ProductInfoPage extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
-            const Text('Price: \$19.99', style: TextStyle(fontSize: 16)),
+            Text('Product Image: ${product.productImage}', style: TextStyle(fontSize: 16)),
             const SizedBox(height: 10),
             const Text(
               'Description: This is a sample product description.',

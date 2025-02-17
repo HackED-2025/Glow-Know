@@ -67,6 +67,7 @@ class _CameraPageState extends State<CameraPage> {
 
       final newProduct = Product(
         productName: responseData['product']['name'],
+        productImage: responseData['product']['imageUrl'],
         productScore: 4.5,
         productEnvironmentScore: 3.8,
         productType: 'Skincare',
