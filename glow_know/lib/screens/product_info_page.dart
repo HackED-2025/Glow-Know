@@ -27,9 +27,13 @@ class ProductInfoPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text('Product Image: ${product.productImage}', style: TextStyle(fontSize: 16)),
+            Text(
+              'Suitability Score: ${product.productScore}',
+            ),
+            const SizedBox(height: 10),
             const SizedBox(height: 10),
             Text(
-              'Danger Score: ${product.productScore}',
+              'Danger Score: ${product.productHealthScore}',
             ),
             const SizedBox(height: 10),
             Text(
