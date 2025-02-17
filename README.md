@@ -8,7 +8,6 @@ Developed during HackED 2025, Ingredia is a suite of two smart scanning apps des
 - [📘 Ingredia: Cosmetics + Nutrition](#-ingredia-cosmetics--nutrition)
   - [💄 Ingredia: Cosmetics](#-ingredia-cosmetics)
     - [✨ Features](#-features)
-    - [🚀 Deployment](#-deployment)
     - [🖼️ Screenshots](#-screenshots)
   - [🥗 Ingredia: Nutrition](#-ingredia-nutrition)
     - [✨ Features](#-features-1)
