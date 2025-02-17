@@ -8,6 +8,7 @@ import '../utils/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../environment.dart';
+import '../utils/preferences.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -43,6 +44,11 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   static Future<List<String>> _askAi(String ingredients) async {
+
+    final skinTypes = await Preferences.getSkinTypes();
+    final hairTypes = await Preferences.getHairTypes();
+    final isVegan = await Preferences.isVegan();
+
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: {
@@ -52,8 +58,10 @@ class _CameraPageState extends State<CameraPage> {
       body: jsonEncode({
         'model': 'gpt-4o-mini',
         'messages': [
-          {'role': 'system', 'content': """Return a report about the danger of each of these cosmetic product ingredients.
-                                           First, return the word "RATING: " followed by the health rating of the product from 1 - 10, 1 being safe, 10 being highest risk.
+          {'role': 'system', 'content': """Return a report about the suitability of each of these cosmetic product ingredients.
+                                           The user's skin type is ${skinTypes.join(', ')}, hair type is ${hairTypes.join(', ')}, and they are ${isVegan ? 'vegan' : 'not vegan'}.
+                                           First, return the word "HEALTH RATING: " followed by the health rating of the product from 1 - 10, 1 being highest risk, 10 being lowest risk.
+                                           Second, return the word "GENERAL RATING: " followed by the suitability of the product for the user, factoring in the health rating, their skin type, hair type, and whether they're vegan. 1 being least suitable, 10 being most suitable.
                                            Then, return the word "SUMMARY: " followed by a brief summary of each ingredient.
                                            Each key is the name of the ingredient and each value is the brief health summary of the ingredient, no more then 20 words. 
                                            Don't include ** characters. """},
@@ -65,15 +73,16 @@ class _CameraPageState extends State<CameraPage> {
     final content = responseJson['choices'][0]['message']['content'];
 
     final summaryIndex = content.indexOf('SUMMARY: ');
-    final ratingIndex = content.indexOf('RATING: ');
+    final healthRatingIndex = content.indexOf ('HEALTH RATING: ');
+    final generalRatingIndex = content.indexOf('GENERAL RATING: ');
 
     final ingredientsList = content.substring(summaryIndex + 9);
+    final rating = content.substring(generalRatingIndex + 15, summaryIndex - 1);
+    final healthRating = content.substring(healthRatingIndex + 14, generalRatingIndex - 1);
 
-    final rating = content.substring(ratingIndex + 8, summaryIndex - 1);
-
-    print(rating);
+    print('Rating: ${rating} Health Rating: ${healthRating}');
     
-    return [rating, ingredientsList];
+    return [rating, healthRating, ingredientsList];
   }
 
   void _handleBarcode(String scannedData) async {
@@ -102,10 +111,10 @@ class _CameraPageState extends State<CameraPage> {
         productName: responseData['product']['name'],
         productScore: double.parse(aiResponse[0]),
         productImage: responseData['product']['imageUrl'],
-        productEnvironmentScore: 3.8,
+        productHealthScore: 3.8,
         productType: 'Skincare',
         ingredientsList: 'Nada',
-        ingredientsListSummary: aiResponse[1],
+        ingredientsListSummary: aiResponse[2],
         ingredientsListBreakdown: 'Contains 5 beneficial ingredients',
       );
 
