@@ -29,9 +29,6 @@ Designed for skincare products, "Ingredia: Cosmetics" is our proof of concept fo
 - Health Score: See how the product compares to others.
 - Personalized Insights: Save your preferences for tailored recommendations.
 
-### Deployment
-
-
 ## Ingredia: Nutrition
 
 Nutrition Repo: (https://github.com/HackED-2025/IngredientSafe-ios)
