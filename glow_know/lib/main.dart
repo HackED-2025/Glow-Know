@@ -391,7 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/// A card representing a recently scanned product with an SVG hexagon underlay.
+/// A card representing a recently scanned product with a colored hexagon and title.
 class RecentlyScannedProductCard extends StatelessWidget {
   final int score;
   final String title;
@@ -429,27 +429,23 @@ class RecentlyScannedProductCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Underlay the SVG hexagon with the dynamic color and overlay the score text
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SvgPicture.string(
-                hexagonSvg,
-                width: 60,
-                height: 60,
-                colorFilter: ColorFilter.mode(
-                  getColorForScore(score),
-                  BlendMode.srcIn,
-                ),
-              ),
-              Text(
+          // Circle instead of hexagon
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: getColorForScore(score),
+            ),
+            child: Center(
+              child: Text(
                 '$score',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ],
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -463,4 +459,26 @@ class RecentlyScannedProductCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A custom clipper to create a hexagon shape.
+class HexagonClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final double width = size.width;
+    final double height = size.height;
+    final Path path = Path();
+    // Define points for a hexagon
+    path.moveTo(width * 0.25, 0);
+    path.lineTo(width * 0.75, 0);
+    path.lineTo(width, height * 0.5);
+    path.lineTo(width * 0.75, height);
+    path.lineTo(width * 0.25, height);
+    path.lineTo(0, height * 0.5);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
