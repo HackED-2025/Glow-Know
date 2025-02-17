@@ -1,10 +1,10 @@
 class Product {
   final String productName;
   final double productScore;
-  final double productEnvironmentScore;
+  final double productHealthScore;
   final String productType;
   final String ingredientsList;
-  final String ingredientsListSummary;
+  final List ingredientsListSummary;
   final String ingredientsListBreakdown;
   final String productImage;
 
@@ -12,7 +12,7 @@ class Product {
     required this.productName,
     required this.productImage,
     required this.productScore,
-    required this.productEnvironmentScore,
+    required this.productHealthScore,
     required this.productType,
     required this.ingredientsList,
     required this.ingredientsListSummary,
@@ -23,7 +23,7 @@ class Product {
     'productName': productName,
     'productImage': productImage,
     'productScore': productScore,
-    'productEnvironmentScore': productEnvironmentScore,
+    'productHealthScore': productHealthScore,
     'productType': productType,
     'ingredientsList': ingredientsList,
     'ingredientsListSummary': ingredientsListSummary,
@@ -34,7 +34,7 @@ class Product {
     productName: json['productName'],
     productImage: json['productImage'],
     productScore: json['productScore'],
-    productEnvironmentScore: json['productEnvironmentScore'],
+    productHealthScore: json['productHealthScore'],
     productType: json['productType'],
     ingredientsList: json['ingredientsList'],
     ingredientsListSummary: json['ingredientsListSummary'],
