@@ -203,7 +203,7 @@ class _CameraPageState extends State<CameraPage> {
                   const Spacer(),
                   Center(
                     child: Text(
-                      'Powered by Glow Know',
+                      'Powered by Vespera',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.fontPrimary.withOpacity(0.6),

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:snapping_sheet/snapping_sheet.dart';
 import 'package:glow_know/screens/camera_page.dart';
 import 'package:glow_know/screens/preferences_screen.dart';
-import 'package:glow_know/utils/theme.dart'; // Import theme
+import 'package:glow_know/utils/theme.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Glow Know',
+      title: 'Vespera',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Nunito',
@@ -43,16 +44,33 @@ class _MyHomePageState extends State<MyHomePage> {
   final _sheetController = SnappingSheetController();
   bool _isPressed = false;
 
+  Route _createRoute() {
+    return PageRouteBuilder(
+      pageBuilder:
+          (context, animation, secondaryAnimation) => const CameraPage(),
+      transitionDuration: const Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+
+        return SlideTransition(position: animation.drive(tween), child: child);
+      },
+    );
+  }
+
   void _toggleAnimation() {
     setState(() {
       _isPressed = true;
     });
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const CameraPage()),
-      ).then((_) {
+    Future.delayed(const Duration(milliseconds: 300), () {
+      Navigator.of(context).push(_createRoute()).then((_) {
         setState(() {
           _isPressed = false;
         });
@@ -74,121 +92,153 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          Center(
+          // Main content
+          SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Tap to scan product',
-                  style: TextStyle(
-                    color: AppColors.fontPrimary,
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    height: 1,
+                // Header with logo and app name
+                const SizedBox(height: 60), // Adjust spacing as needed
+                SvgPicture.asset('assets/logo.svg', height: 100),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 48),
+                  child: Text(
+                    'VESPERA',
+                    style: TextStyle(
+                      color: AppColors.fontPrimary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.normal,
+                      letterSpacing: 4.0,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: _toggleAnimation,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 280,
-                    height: 280,
-                    child: Stack(
-                      children: [
-                        // Outer Circle (Border)
-                        AnimatedContainer(
+                // Your original center content
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Tap to scan product',
+                        style: TextStyle(
+                          color: AppColors.fontPrimary,
+                          fontFamily: 'Inter',
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: _toggleAnimation,
+                        child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           width: 280,
                           height: 280,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color:
-                                  _isPressed
-                                      ? AppColors.secondary
-                                      : AppColors.fontPrimary.withOpacity(0.15),
-                              width: 1,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        // Middle Circle (Shadow + White Border)
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
-                          top: 29,
-                          left: 29,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: 222,
-                            height: 222,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              border: Border.all(color: Colors.white, width: 1),
-                              boxShadow:
-                                  _isPressed
-                                      ? [
-                                        BoxShadow(
-                                          color: AppColors.secondary
-                                              .withOpacity(0.5),
-                                          offset: Offset(0, 0),
-                                          blurRadius: 50,
-                                        ),
-                                      ]
-                                      : [
-                                        BoxShadow(
-                                          color: AppColors.fontPrimary
-                                              .withOpacity(0.25),
-                                          offset: const Offset(0, 2),
-                                          blurRadius: 4,
-                                        ),
-                                      ],
-                            ),
-                          ),
-                        ),
-                        // Inner Circle (Primary with Border)
-                        AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
-                          top: 45.5,
-                          left: 45.5,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            width: 189,
-                            height: 189,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color:
-                                    _isPressed
-                                        ? AppColors.fontPrimary.withOpacity(
-                                          0.25,
-                                        )
-                                        : AppColors.fontSecondary,
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: AnimatedContainer(
+                          child: Stack(
+                            children: [
+                              // Outer Circle (Border)
+                              AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                width: _isPressed ? 60 : 50,
-                                height: _isPressed ? 60 : 50,
-                                child: Image.asset(
-                                  'assets/Vector.png',
-                                  fit: BoxFit.cover,
+                                width: 280,
+                                height: 280,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color:
+                                        _isPressed
+                                            ? AppColors.secondary
+                                            : AppColors.fontPrimary.withOpacity(
+                                              0.15,
+                                            ),
+                                    width: 1,
+                                  ),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
-                            ),
+                              // Middle Circle (Shadow + White Border)
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 300),
+                                top: 29,
+                                left: 29,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  width: 222,
+                                  height: 222,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1,
+                                    ),
+                                    boxShadow:
+                                        _isPressed
+                                            ? [
+                                              BoxShadow(
+                                                color: AppColors.secondary
+                                                    .withOpacity(0.5),
+                                                offset: const Offset(0, 0),
+                                                blurRadius: 50,
+                                              ),
+                                            ]
+                                            : [
+                                              BoxShadow(
+                                                color: AppColors.fontPrimary
+                                                    .withOpacity(0.25),
+                                                offset: const Offset(0, 2),
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                  ),
+                                ),
+                              ),
+                              // Inner Circle (Primary with Border)
+                              AnimatedPositioned(
+                                duration: const Duration(milliseconds: 300),
+                                top: 45.5,
+                                left: 45.5,
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  width: 189,
+                                  height: 189,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color:
+                                          _isPressed
+                                              ? AppColors.fontPrimary
+                                                  .withOpacity(0.25)
+                                              : AppColors.fontSecondary,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: AnimatedContainer(
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
+                                      width: _isPressed ? 60 : 50,
+                                      height: _isPressed ? 60 : 50,
+                                      child: Image.asset(
+                                        'assets/Vector.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+          // Snapping Sheet remains unchanged
           SnappingSheet(
             controller: _sheetController,
             grabbingHeight: 60,
