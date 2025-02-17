@@ -26,8 +26,12 @@ class ProductInfoPage extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Description: This is a sample product description.',
+            Text(
+              'Danger Score: ${product.productScore}',
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Summary: ${product.ingredientsListSummary}',
               style: TextStyle(fontSize: 16),
             ),
             const Spacer(),
